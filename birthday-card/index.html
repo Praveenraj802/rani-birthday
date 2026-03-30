@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Sweetheart!</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="screen active">
+            <h1 class="title">Happy Birthday,<br><span class="highlight">Rani!</span></h1>
+            <p class="subtitle">I made something special for you...</p>
+            <button id="start-btn" class="primary-btn">Open Your Present 🎁</button>
+        </section>
+
+        <!-- Main Content Screen -->
+        <section id="main-screen" class="screen hidden">
+            <!-- Music Player -->
+            <div class="music-player">
+                <button id="music-btn" class="icon-btn">🎵 Play 'Happy Birthday Rani'</button>
+                <audio id="bg-music" loop>
+                    <source src="assets/music/happy_birthday_rani.m4a" type="audio/mp4">
+                </audio>
+            </div>
+
+            <!-- Slideshow -->
+            <div class="slideshow-container">
+                <div class="slide fade active">
+                    <img id="photo-2" src="assets/images/photo-2.png" alt="Cute Teddy Bear">
+                </div>
+                <div class="slide fade">
+                    <img id="photo-3" src="assets/images/photo-3.png" alt="Beautiful Bouquet">
+                </div>
+                <div class="slide fade">
+                    <img id="photo-4" src="assets/images/photo-4.png" alt="Teddy bear with gift">
+                </div>
+                <div class="slide fade">
+                    <img id="photo-5" src="assets/images/photo-5.png" alt="Two teddy bears hugging">
+                </div>
+                <div class="slide fade">
+                    <img id="photo-6" src="assets/images/photo-6.png" alt="Pink peonies bouquet">
+                </div>
+                <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+                <button class="next" onclick="changeSlide(1)">&#10095;</button>
+            </div>
+
+            <!-- Interactive Elements -->
+            <div class="interactive-area">
+                <h2 class="section-title">Tap the hearts to reveal a surprise...</h2>
+                <div class="hearts-container">
+                    <div class="heart-item" data-message="You light up my life every single day! ✨">❤️</div>
+                    <div class="heart-item" data-message="Your smile is my favorite thing in the world. 😊">💖</div>
+                    <div class="heart-item" data-message="I love you more than words can say. 🥰">💝</div>
+                </div>
+                <!-- Modal for messages -->
+                <div id="message-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="close-btn">&times;</span>
+                        <p id="modal-text"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Game / Quiz -->
+            <div class="quiz-section">
+                <h2 class="section-title">A Little Question for You...</h2>
+                <p class="quiz-q">Who loves Rani the most in the entire universe?</p>
+                <div class="quiz-options">
+                    <button class="quiz-btn wrong">Pizza 🍕</button>
+                    <button class="quiz-btn wrong">Your Phone 📱</button>
+                    <button class="quiz-btn correct">Me! 🙋‍♂️</button>
+                </div>
+                <p id="quiz-result" class="hidden"></p>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
