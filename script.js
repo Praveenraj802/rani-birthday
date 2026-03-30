@@ -1,160 +1,177 @@
-// --- Elements ---
-const welcomeScreen = document.getElementById('welcome-screen');
-const mainScreen = document.getElementById('main-screen');
-const startBtn = document.getElementById('start-btn');
-const musicBtn = document.getElementById('music-btn');
-const bgMusic = document.getElementById('bg-music');
-const hearts = document.querySelectorAll('.heart-item');
-const modal = document.getElementById('message-modal');
-const modalText = document.getElementById('modal-text');
-const closeBtn = document.querySelector('.close-btn');
-const quizBtns = document.querySelectorAll('.quiz-btn');
-const quizResult = document.getElementById('quiz-result');
-
-// --- Screen Transition ---
-startBtn.addEventListener('click', () => {
-    welcomeScreen.classList.add('hidden');
-    mainScreen.classList.remove('hidden');
-    startConfetti();
-    // Try to play music automatically if allowed by browser
-    bgMusic.play().catch(() => console.log('Autoplay blocked'));
-});
-
-// --- Music Player ---
-let isPlaying = false;
-musicBtn.addEventListener('click', () => {
-    if (isPlaying) {
-        bgMusic.pause();
-        musicBtn.textContent = "🎵 Play Our Song";
-    } else {
-        bgMusic.play();
-        musicBtn.textContent = "⏸ Pause Song";
+const contentData = {
+    parents: {
+        images: [
+            { url: 'assets/images/parents/parents_real.jpg', caption: 'Thank you for everything, Mom & Dad ❤️' }
+        ]
+    },
+    rani: {
+        images: [
+            { url: 'assets/images/rani/rani_1.jpg', caption: 'The most beautiful girl in the world ❤️' },
+            { url: 'assets/images/rani/rani_2.jpg', caption: 'Shining brighter than the stars' },
+            { url: 'assets/images/rani/rani_3.jpg', caption: 'My everything, my love' },
+            { url: 'assets/images/rani/rani_4.jpg', caption: 'Every moment with you is magic' },
+            { url: 'assets/images/rani/rani_5.jpg', caption: 'I promise to love you forever Rani' }
+        ]
+    },
+    teadys: {
+        images: [
+            { url: 'assets/images/teadys/teady_1.png', caption: 'A sweet gift for a sweet soul 🧸' },
+            { url: 'assets/images/teadys/teady_2.png', caption: 'Sending you soft hugs and love' },
+            { url: 'assets/images/teadys/teady_3.png', caption: 'Always here to cheer you up!' }
+        ]
     }
-    isPlaying = !isPlaying;
-});
+};
 
-// --- Slideshow ---
-let slideIndex = 0;
-const slides = document.querySelectorAll('.slide');
+let currentCategory = '';
+let currentSlideIndex = 0;
+let slideshowInterval;
 
-function showSlide(n) {
-    slides.forEach(slide => slide.classList.remove('active'));
-    slideIndex = n;
-    
-    if (slideIndex >= slides.length) slideIndex = 0;
-    if (slideIndex < 0) slideIndex = slides.length - 1;
-    
-    slides[slideIndex].classList.add('active');
-}
+// Initialize Background Animations
+function initAnimations() {
+    const heartsContainer = document.getElementById('hearts-container');
+    const heartCount = 40;
 
-function changeSlide(n) {
-    showSlide(slideIndex + n);
-}
-
-// Auto slideshow
-setInterval(() => {
-    if(!mainScreen.classList.contains('hidden')) {
-        changeSlide(1);
-    }
-}, 3000);
-
-// --- Hearts Interactive ---
-hearts.forEach(heart => {
-    heart.addEventListener('click', () => {
-        const message = heart.getAttribute('data-message');
-        modalText.textContent = message;
-        modal.classList.remove('hidden');
-        startConfetti(); // tiny burst
-    });
-});
-
-closeBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-});
-
-window.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        modal.classList.add('hidden');
-    }
-});
-
-// --- Mini Quiz ---
-quizBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        quizBtns.forEach(b => b.style.pointerEvents = 'none'); // disable all
-        quizResult.classList.remove('hidden');
+    for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = Math.random() > 0.5 ? '❤️' : '💖';
         
-        if (btn.classList.contains('correct')) {
-            btn.style.background = '#4CAF50';
-            btn.style.borderColor = '#4CAF50';
-            btn.style.color = 'white';
-            quizResult.textContent = "Exactly! I love you so much! 🎉💖";
-            startConfetti();
-        } else {
-            btn.style.background = '#f44336';
-            btn.style.borderColor = '#f44336';
-            btn.style.color = 'white';
-            quizResult.textContent = "Aww close, but the correct answer is ME! 😊";
-        }
-    });
-});
+        const left = Math.random() * 100;
+        const duration = 5 + Math.random() * 8;
+        const delay = Math.random() * 5;
+        const opacity = 0.3 + Math.random() * 0.5;
+        const size = 0.8 + Math.random() * 1.5;
 
-// --- Confetti Effect ---
-const canvas = document.getElementById('confetti-canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+        heart.style.left = `${left}%`;
+        heart.style.fontSize = `${size}rem`;
+        heart.style.setProperty('--duration', `${duration}s`);
+        heart.style.setProperty('--opacity', opacity);
+        heart.style.animationDelay = `${delay}s`;
 
-let confettiParts = [];
-const colors = ['#ff4d6d', '#ffb3c1', '#ffffff', '#ffd166', '#4ecdc4'];
-
-function createConfetti() {
-    for (let i = 0; i < 100; i++) {
-        confettiParts.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            size: Math.random() * 8 + 4,
-            speedY: Math.random() * 3 + 2,
-            speedX: Math.random() * 2 - 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            rotation: Math.random() * 360,
-            rotationSpeed: Math.random() * 10 - 5
-        });
+        heartsContainer.appendChild(heart);
     }
 }
 
-function drawConfetti() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confettiParts.forEach((p, index) => {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        ctx.restore();
+// Modal & Slideshow Logic
+function openSlideshow(category) {
+    currentCategory = category;
+    currentSlideIndex = 0;
+    
+    renderSlides();
+    updateSlideDisplay();
+    
+    const modal = document.getElementById('slideshow-modal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Stop scrolling
+    
+    // Auto-advance slideshow
+    startSlideshowTimer();
+}
 
-        p.y += p.speedY;
-        p.x += p.speedX;
-        p.rotation += p.rotationSpeed;
+function closeSlideshow() {
+    const modal = document.getElementById('slideshow-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto'; // Restore scrolling
+    clearInterval(slideshowInterval);
+}
 
-        if (p.y > canvas.height) {
-            confettiParts.splice(index, 1);
-        }
+function renderSlides() {
+    const wrapper = document.getElementById('slides-wrapper');
+    const dotsContainer = document.getElementById('dots-container');
+    const categoryData = contentData[currentCategory];
+    
+    wrapper.innerHTML = '';
+    dotsContainer.innerHTML = '';
+    
+    categoryData.images.forEach((img, index) => {
+        // Create Slide
+        const slideDiv = document.createElement('div');
+        slideDiv.classList.add('slide');
+        if (index === 0) slideDiv.classList.add('active');
+        
+        const image = document.createElement('img');
+        image.src = img.url;
+        image.alt = `Slide ${index + 1}`;
+        
+        slideDiv.appendChild(image);
+        wrapper.appendChild(slideDiv);
+        
+        // Create Dot
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (index === 0) dot.classList.add('active');
+        dot.onclick = () => goToSlide(index);
+        dotsContainer.appendChild(dot);
+    });
+}
+
+function updateSlideDisplay() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const caption = document.getElementById('slide-caption');
+    const categoryData = contentData[currentCategory];
+    
+    slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlideIndex);
     });
     
-    if (confettiParts.length > 0) {
-        requestAnimationFrame(drawConfetti);
-    } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === currentSlideIndex);
+    });
+    
+    // Smooth text transition
+    caption.style.opacity = 0;
+    setTimeout(() => {
+        caption.innerText = categoryData.images[currentSlideIndex].caption;
+        caption.style.opacity = 1;
+    }, 400);
+}
+
+function nextSlide() {
+    const categoryData = contentData[currentCategory];
+    currentSlideIndex = (currentSlideIndex + 1) % categoryData.images.length;
+    updateSlideDisplay();
+    resetSlideshowTimer();
+}
+
+function prevSlide() {
+    const categoryData = contentData[currentCategory];
+    currentSlideIndex = (currentSlideIndex - 1 + categoryData.images.length) % categoryData.images.length;
+    updateSlideDisplay();
+    resetSlideshowTimer();
+}
+
+function goToSlide(index) {
+    currentSlideIndex = index;
+    updateSlideDisplay();
+    resetSlideshowTimer();
+}
+
+function startSlideshowTimer() {
+    slideshowInterval = setInterval(nextSlide, 5000); // 5 seconds per slide
+}
+
+function resetSlideshowTimer() {
+    clearInterval(slideshowInterval);
+    startSlideshowTimer();
+}
+
+// Click outside modal to close
+window.onclick = function(event) {
+    const modal = document.getElementById('slideshow-modal');
+    if (event.target == modal) {
+        closeSlideshow();
     }
-}
+};
 
-function startConfetti() {
-    createConfetti();
-    drawConfetti();
-}
+// Key controls
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSlideshow();
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+});
 
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+// Initialize on load
+window.addEventListener('DOMContentLoaded', () => {
+    initAnimations();
 });
